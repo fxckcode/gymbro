@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for skill:*)",
+      "Bash(do echo:*)",
+      "mcp__plugin_engram_engram__mem_save",
+      "mcp__plugin_engram_engram__mem_search",
+      "Bash(npm install:*)",
+      "mcp__plugin_engram_engram__mem_update",
+      "Bash(npm test:*)",
+      "Bash(node:*)",
+      "Skill(update-config)",
+      "Write(C:\\PROJECT\\WHITELABEL\\gymbro\\.env*)"
+    ]
+  }
+}

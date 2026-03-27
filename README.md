@@ -1,98 +1,121 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Gymbro API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend API for the Gymbro whitelabel platform, built with NestJS.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Tech Stack
 
-## Description
+| Layer | Technology |
+|-------|-----------|
+| Framework | NestJS 11 |
+| Language | TypeScript 5.7 |
+| ORM | Prisma 7 |
+| Database | PostgreSQL 16 + pgvector |
+| Cache | Redis 7 |
+| API Docs | Swagger / OpenAPI |
+| Testing | Jest 30 + Supertest |
+| Package Manager | pnpm |
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Prerequisites
 
-## Project setup
+- [Node.js 22](https://nodejs.org)
+- [pnpm](https://pnpm.io) — `npm install -g pnpm`
+- [Docker](https://www.docker.com)
+
+## Local Setup
 
 ```bash
-$ pnpm install
+# 1. Clone and enter the project
+git clone <repo-url>
+cd gymbro
+
+# 2. Set up environment variables
+cp .env.example .env
+
+# 3. Install dependencies
+pnpm install
+
+# 4. Start database and Redis
+docker compose up db redis -d
+
+# 5. Generate Prisma client
+npx prisma generate
+
+# 6. Start development server
+pnpm start:dev
 ```
 
-## Compile and run the project
+The API will be available at `http://localhost:3000`.
+
+## Available Scripts
+
+| Script | Description |
+|--------|-------------|
+| `pnpm start:dev` | Start with hot reload |
+| `pnpm start:debug` | Start with debugger on port 9229 |
+| `pnpm start:prod` | Start compiled production build |
+| `pnpm build` | Compile TypeScript to `dist/` |
+| `pnpm lint` | Run ESLint with auto-fix |
+| `pnpm test` | Run unit tests |
+| `pnpm test:watch` | Run tests in watch mode |
+| `pnpm test:cov` | Run tests with coverage report |
+| `pnpm test:e2e` | Run end-to-end tests |
+
+## Docker
+
+### Full stack (production build)
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+docker compose up
 ```
 
-## Run tests
+Starts app (production image), PostgreSQL, and Redis. All services include health checks.
+
+### Development with hot reload
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 ```
 
-## Deployment
+Mounts source code as a volume and runs `pnpm start:dev` inside the container.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Individual services
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+docker compose up db redis -d   # Only database + Redis (for local dev)
+docker compose down             # Stop and remove containers
+docker compose down -v          # Stop and remove containers + volumes
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+## API Reference
 
-## Resources
+| Endpoint | Description | Availability |
+|----------|-------------|-------------|
+| `GET /health` | Health check with DB connectivity | Always |
+| `GET /api/docs` | Swagger UI | Development only |
+| `GET /api/docs-json` | OpenAPI JSON spec | Development only |
 
-Check out a few resources that may come in handy when working with NestJS:
+## Git Conventions
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+This repository enforces [Conventional Commits](https://www.conventionalcommits.org).
+The `commit-msg` hook will reject any commit that doesn't follow the format:
 
-## Support
+```
+<type>(<scope>): <description>
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+feat(auth): add JWT middleware
+fix(health): handle DB timeout
+chore(deps): update nestjs to v11
+```
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Type | Use for |
+|------|---------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `chore` | Maintenance, dependency updates |
+| `docs` | Documentation changes |
+| `refactor` | Code refactor without behavior change |
+| `test` | Adding or updating tests |
+| `perf` | Performance improvements |
+| `ci` | CI/CD changes |
+| `build` | Build system changes |
+| `style` | Code style (formatting, semicolons) |
