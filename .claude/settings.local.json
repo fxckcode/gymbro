@@ -10,7 +10,8 @@
       "Bash(npm test:*)",
       "Bash(node:*)",
       "Skill(update-config)",
-      "Write(C:\\PROJECT\\WHITELABEL\\gymbro\\.env*)"
+      "Write(C:\\PROJECT\\WHITELABEL\\gymbro\\.env*)",
+      "Bash(find /c/PROJECT/WHITELABEL/gymbro/test -name *.e2e-spec.ts)"
     ]
   }
 }
