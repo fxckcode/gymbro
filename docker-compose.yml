@@ -1,0 +1,14 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: gymbro-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: gymbro
+      POSTGRES_DB: gymbro
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

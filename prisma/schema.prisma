@@ -1,0 +1,107 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                String             @id @default(uuid()) @db.Uuid
+  name              String?
+  createdAt         DateTime           @default(now()) @map("created_at")
+  channelIdentities ChannelIdentity[]
+  workoutPlans      WorkoutPlan[]
+  workoutSessions   WorkoutSession[]
+  goals             Goal[]
+  chatMessages      ChatMessage[]
+
+  @@map("users")
+}
+
+model ChannelIdentity {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  channel    String
+  channelUid String   @map("channel_uid")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([channel, channelUid])
+  @@map("channel_identities")
+}
+
+model WorkoutPlan {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  name      String
+  structure Json
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessions WorkoutSession[]
+
+  @@map("workout_plans")
+}
+
+model WorkoutSession {
+  id            String    @id @default(uuid()) @db.Uuid
+  userId        String    @map("user_id") @db.Uuid
+  workoutPlanId String?   @map("workout_plan_id") @db.Uuid
+  dayName       String?   @map("day_name")
+  entries       Json
+  notes         String?
+  performedAt   DateTime  @map("performed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  user User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan WorkoutPlan?       @relation(fields: [workoutPlanId], references: [id], onDelete: SetNull)
+
+  @@index([userId, performedAt(sort: Desc)])
+  @@map("workout_sessions")
+}
+
+model Goal {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @map("user_id") @db.Uuid
+  title       String
+  type        String
+  targetValue Decimal?      @map("target_value") @db.Decimal(10, 2)
+  deadline    DateTime?
+  status      String        @default("active")
+  createdAt   DateTime      @default(now()) @map("created_at")
+
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkins GoalCheckIn[]
+
+  @@map("goals")
+}
+
+model GoalCheckIn {
+  id        String   @id @default(uuid()) @db.Uuid
+  goalId    String   @map("goal_id") @db.Uuid
+  value     Decimal  @db.Decimal(10, 2)
+  note      String?
+  checkedIn DateTime @default(now()) @map("checked_in")
+
+  goal Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@map("goal_checkins")
+}
+
+model ChatMessage {
+  id        BigInt   @id @default(autoincrement())
+  userId    String   @map("user_id") @db.Uuid
+  role      String
+  content   String
+  channel   String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt(sort: Desc)])
+  @@map("chat_messages")
+}
