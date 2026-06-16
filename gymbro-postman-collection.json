@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "GymBro API",
+    "description": "GymBro AI Fitness Coach — Backend conversacional con IA para trazabilidad de rutinas, metas y progreso",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000", "type": "string" },
+    { "key": "userId", "value": "", "type": "string", "description": "ID del usuario obtenido de /users/identify" },
+    { "key": "goalId", "value": "", "type": "string" },
+    { "key": "planId", "value": "", "type": "string" },
+    { "key": "sessionId", "value": "", "type": "string" },
+    { "key": "checkinId", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "pm.test('Has status key', () => pm.expect(pm.response.json().status).to.eq('ok'));"] } }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Identify User",
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "var json = pm.response.json();", "pm.collectionVariables.set('userId', json.id);"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"channel\": \"telegram\", \"channelUid\": \"123456789\"}" },
+            "url": { "raw": "{{baseUrl}}/users/identify", "host": ["{{baseUrl}}"], "path": ["users", "identify"] }
+          }
+        },
+        {
+          "name": "Get User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\": \"Diego\"}" },
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workout Plans",
+      "item": [
+        {
+          "name": "Create Workout Plan",
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "var json = pm.response.json();", "pm.collectionVariables.set('planId', json.id);"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\": \"Push Pull Legs\", \"structure\": [{\"name\": \"Push\", \"exercises\": [{\"name\": \"Press Banca\", \"sets\": 4, \"reps\": \"8-12\"}]}, {\"name\": \"Pull\", \"exercises\": [{\"name\": \"Remo\", \"sets\": 4, \"reps\": \"8-12\"}]}]}" },
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/workout-plans", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "workout-plans"] }
+          }
+        },
+        {
+          "name": "List Workout Plans",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/workout-plans", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "workout-plans"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Workout Sessions",
+      "item": [
+        {
+          "name": "Log Workout Session",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"entries\": [{\"exerciseName\": \"Press Banca\", \"sets\": [{\"weight\": 80, \"reps\": 5}, {\"weight\": 80, \"reps\": 5}, {\"weight\": 85, \"reps\": 3}]}, {\"exerciseName\": \"Remo\", \"sets\": [{\"weight\": 60, \"reps\": 8}, {\"weight\": 60, \"reps\": 8}, {\"weight\": 60, \"reps\": 8}]}], \"notes\": \"Buena sesion\"}" },
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/workout-sessions", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "workout-sessions"] }
+          }
+        },
+        {
+          "name": "List Workout Sessions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/workout-sessions?limit=10", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "workout-sessions"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Goals",
+      "item": [
+        {
+          "name": "Create Goal",
+          "event": [
+            { "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "var json = pm.response.json();", "pm.collectionVariables.set('goalId', json.id);"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"title\": \"Press banca a 100kg\", \"type\": \"strength\", \"targetValue\": 100}" },
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/goals", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "goals"] }
+          }
+        },
+        {
+          "name": "List Goals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/goals?status=active", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "goals"] }
+          }
+        },
+        {
+          "name": "Goal Check-in",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"value\": 90, \"note\": \"Llegue a 90kg en press banca\"}" },
+            "url": { "raw": "{{baseUrl}}/goals/{{goalId}}/checkins", "host": ["{{baseUrl}}"], "path": ["goals", "{{goalId}}", "checkins"] }
+          }
+        },
+        {
+          "name": "Goal Progress",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/goals/{{goalId}}/progress", "host": ["{{baseUrl}}"], "path": ["goals", "{{goalId}}", "progress"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat",
+      "item": [
+        {
+          "name": "Chat History",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/chat/history?limit=10", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "chat", "history"] }
+          }
+        },
+        {
+          "name": "Search Chat",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}/chat/search?q=press", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}", "chat", "search"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Agent",
+      "item": [
+        {
+          "name": "Send Message to Agent",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"userId\": \"{{userId}}\", \"text\": \"hoy hice press 80x5x3, remo 60x8x3\", \"channel\": \"telegram\"}" },
+            "url": { "raw": "{{baseUrl}}/chat/message", "host": ["{{baseUrl}}"], "path": ["chat", "message"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Webhook",
+      "item": [
+        {
+          "name": "Telegram Webhook (simulated)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-channel", "value": "telegram" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"message\": {\"chat\": {\"id\": 12345}, \"text\": \"Hola GymBro!\"}}" },
+            "url": { "raw": "{{baseUrl}}/webhooks/incoming", "host": ["{{baseUrl}}"], "path": ["webhooks", "incoming"] }
+          }
+        },
+        {
+          "name": "WhatsApp Webhook (simulated)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-channel", "value": "whatsapp" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"entry\": [{\"changes\": [{\"value\": {\"messages\": [{\"from\": \"573001234567\", \"text\": {\"body\": \"hoy hice press 80x5\"}}]}}]}]}" },
+            "url": { "raw": "{{baseUrl}}/webhooks/incoming", "host": ["{{baseUrl}}"], "path": ["webhooks", "incoming"] }
+          }
+        }
+      ]
+    }
+  ]
+}
