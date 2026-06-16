@@ -10,6 +10,8 @@ import { UsersModule } from './modules/users/users.module';
 import { WorkoutsModule } from './modules/workouts/workouts.module';
 import { GoalsModule } from './modules/goals/goals.module';
 import { ChatModule } from './modules/chat/chat.module';
+import { ChannelModule } from './common/channels/channel.module';
+import { AgentModule } from './modules/agent/agent.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { ChatModule } from './modules/chat/chat.module';
     WorkoutsModule,
     GoalsModule,
     ChatModule,
+    ChannelModule,
+    AgentModule,
   ],
   controllers: [HealthController],
   providers: [
