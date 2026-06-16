@@ -6,6 +6,10 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ValidationPipe as AppValidationPipe } from './common/pipes/validation.pipe';
 import { PrismaService } from './prisma.service';
 import { HealthController } from './health.controller';
+import { UsersModule } from './modules/users/users.module';
+import { WorkoutsModule } from './modules/workouts/workouts.module';
+import { GoalsModule } from './modules/goals/goals.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -14,6 +18,10 @@ import { HealthController } from './health.controller';
       envFilePath: '.env',
     }),
     ScheduleModule.forRoot(),
+    UsersModule,
+    WorkoutsModule,
+    GoalsModule,
+    ChatModule,
   ],
   controllers: [HealthController],
   providers: [
